@@ -32,12 +32,24 @@
 			},false)
 			
 * changedTouches 在 touchend 的时候仍然存在，而touches 和 targetTouches 则 length 为 0
+* 实现长按的思路很easy: 
 
+		var gap = 8000;
+		var timer;
+		documeny.addEventListener('touchstart',function() {
+			timer = setTimeout(function(){
+				console.log('长按执行代码')
+			},gap)
+		},false)
+		documeny.addEventListener('touchend',function() {
+			clearTimeout(timer);
+		},false)
 
 ###  有关性能
 
 
 网页 的渲染部分包含:
+
  * parse html 
  * Recalculate Style [任何企图改变元素样式的操作都会触发] 
  * layout [改变元素位置和大小会触发] 
@@ -50,7 +62,17 @@
 其中着重可以优化的点为 3，5，8［其中经常提到的reflow 指的就是 计算layout, 而 repaint 指的是 当Render Tree中的一些元素需要更新属性，而这些属性只是影响元素的外观、风格、而不会影响布局的，譬如修改background］
 所以以下的性能优化将会围绕这几点
 
-* 避免触发 layout 的操作，譬如用 translate 替代 left,top，position。用 scale 来取代 height 和 width 的改变
-* 
+* 避免触发 layout 的操作，譬如用 translate 替代 left,top，position。用 scale 来取代 height 和 width 的改变 [css trigger上可以查询各个属性的影响]
+* image 容器事先定宽高，防止等图片加载出来之后页面重新layout 及后续操作
+* 合理使用 复合层，复合层过多会导致 消耗过多的内存和资源，但是合理的复合层会实现gpu 加速，减少 需要 重新 layout 的区域 [可以使用will-change:transform或者 transform: translateZ(0) 来实现，但前者在低端android 机上存在兼容性问题]
+
+* 另外新版 chrome 可以利用 coverage 功能去除 冗余的 js 和 css 
+
+
+参考文献: [chrome render工具的介绍](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/)   可以利用它来分析性能瓶颈
+
+
+
+
 
 
