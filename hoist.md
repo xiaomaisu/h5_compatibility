@@ -62,3 +62,12 @@
 	
 	
 google 建议采用函数表达式的书写风格，防止函数定义被不正确的覆盖
+
+
+
+
+还有一个小demo 和 以上思想无关:
+
+	function a() {}
+	var a;
+	console.log(a) //输出的是function 而不是 undefined
